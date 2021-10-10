@@ -49,6 +49,15 @@ class LargeInteger
 		return this;
 	}
 
+	appendDigit(digitToAppend)
+	{
+		// Because the digits are stored
+		// in increasing order of significance,
+		// technically, it's a prepend.
+		this.digits.splice(0, 0, digitToAppend);
+		return this;
+	}
+
 	clone()
 	{
 		var returnValue = new LargeInteger(this.base);
@@ -522,6 +531,22 @@ class LargeInteger
 		this.removeLeadingZeroes();
 
 		return this;
+	}
+
+	setFromString(digitsAsString)
+	{
+		var digitsAsNumbers = [];
+
+		if (this.base <= 10)
+		{
+			digitsAsString.split("").reverse().map(x => parseInt(x));
+		}
+		else
+		{
+			throw("Not yet implemented!");
+		}
+
+		this.digits = digitsAsNumbers;
 	}
 
 	setToOne()

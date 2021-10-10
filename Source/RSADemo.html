@@ -1,11 +1,149 @@
 <html>
+
 <body>
+
+<div id="divUi">
+	<label>RSA Encryption Demo</label>
+	<p>
+		Generate a key pair by clicking the Generate Key Pair button.
+		Enter a message and click the Encrypt buttton to encrypt it.
+		Then click the Decrypt button to Decrypt it.
+	</p>
+
+	<label>Digits per Prime:</label>
+	<br />
+	<input id="inputDigitsPerPrime" type="number" value="2"></input>
+
+	<button onclick="buttonGenerateKeyPair_Clicked();">Generate</button>
+	<br />
+
+	<label>Public Key:</label>
+	<br />
+	<textarea id="textareaPublicKey" cols="40" rows="1"></textarea>
+	<br />
+
+	<label>Private Key:</label>
+	<br />
+	<textarea id="textareaPrivateKey" cols="40" rows="1"></textarea>
+	<br />
+
+	<label>Message to Encrypt:</label>
+	<br />
+	<textarea id="textareaMessageToEncrypt" cols="40" rows="10">RSA</textarea>
+	<br />
+
+	<button onclick="buttonEncrypt_Clicked();">Encrypt with Private Key</button>
+	<br />
+
+	<label>Message to Encrypt as Integer:</label>
+	<br />
+	<textarea id="textareaMessageToEncryptAsInteger" cols="40" rows="10"></textarea>
+	<br />
+
+	<label>Message Encrypted:</label>
+	<br />
+	<textarea id="textareaMessageEncrypted" cols="40" rows="10"></textarea>
+	<br />
+
+	<button onclick="buttonDecrypt_Clicked();">Decrypt with Public Key</button>
+	<br />
+	
+	<label>Message Decrypted:</label>
+	<br />
+	<textarea id="textareaMessageDecrypted" cols="40" rows="10"></textarea>
+	<br />
+	
+</div>
 
 <script type="text/javascript" src="EncryptionKeyPair.js"></script>
 <script type="text/javascript" src="LargeInteger.js"></script>
 <script type="text/javascript" src="MathHelperLargeInteger.js"></script>
 
 <script type="text/javascript">
+
+// UI event handlers.
+
+function buttonDecrypt_Clicked()
+{
+	var d = document;
+
+	var textareaPublicKey = d.getElementById("textareaPublicKey");
+	var textareaPrivateKey = d.getElementById("textareaPrivateKey");
+	var textareaMessageToEncrypt =
+		d.getElementById("textareaMessageToEncrypt");
+	var textareaMessageEncrypted =
+		d.getElementById("textareaMessageEncrypted");
+
+	var keyPair = EncryptionKeyPair.fromJson
+	(
+		textareaPublicKey.value,
+		textareaPrivateKey.value
+	);
+
+	var messageEncryptedAsString = textareaMessageEncrypted.value;
+	var messageToEncryptAsLargeInteger =
+		new LargeInteger(keyPair.modulus).parseFromString(messageEncryptedAsString);
+
+	throw("todo");
+}
+
+function buttonEncrypt_Clicked()
+{
+	var d = document;
+
+	var textareaPublicKey = d.getElementById("textareaPublicKey");
+	var textareaPrivateKey = d.getElementById("textareaPrivateKey");
+	var textareaMessageToEncrypt =
+		d.getElementById("textareaMessageToEncrypt");
+	var textareaMessageToEncryptAsInteger =
+		d.getElementById("textareaMessageToEncryptAsInteger");
+	var textareaMessageEncrypted =
+		d.getElementById("textareaMessageEncrypted");
+
+	var keyPair = EncryptionKeyPair.fromJson
+	(
+		textareaPublicKey.value,
+		textareaPrivateKey.value
+	);
+
+	var messageToEncrypt = textareaMessageToEncrypt.value;
+	var messageToEncryptAsLargeInteger =
+		new LargeInteger(10);
+
+	for (var i = 0; i < messageToEncrypt.length; i++)
+	{
+		var charToEncryptAsNumber = messageToEncrypt.charCodeAt(i);
+		messageToEncryptAsLargeInteger.appendDigit(charToEncryptAsNumber);
+	}
+
+	textareaMessageToEncryptAsInteger.value =
+		messageToEncryptAsLargeInteger.toString();
+
+	var messageEncryptedAsLargeInteger =
+		keyPair.encrypt(messageToEncryptAsLargeInteger);
+
+	var messageEncryptedAsString =
+		messageEncryptedAsLargeInteger.toString()
+
+	textareaMessageEncrypted.value = messageEncryptedAsString;
+}
+
+function buttonGenerateKeyPair_Clicked()
+{
+	var d = document;
+
+	var inputDigitsPerPrime = d.getElementById("inputDigitsPerPrime");
+	var textareaPublicKey = d.getElementById("textareaPublicKey");
+	var textareaPrivateKey = d.getElementById("textareaPrivateKey");
+
+	var digitsPerPrime = parseInt(inputDigitsPerPrime.value);
+
+	var keyPair = new EncryptionKeyPair().generate(digitsPerPrime);
+
+	textareaPublicKey.value = keyPair.keyPublicAsJson();
+
+	textareaPrivateKey.value = keyPair.keyPrivateAsJson();
+}
 
 function main()
 {
@@ -14,8 +152,6 @@ function main()
 	// This implementation can't handle big numbers.
 	var digitsPerPrime = 2;
 
-	var keyPair = new EncryptionKeyPair().generate(digitsPerPrime);
-	document.write("Key pair is " + keyPair.toString() + newline);
 
 	// hack
 	// We're assuming the modulus is greater than the messageToEncrypt.
@@ -50,8 +186,6 @@ function main()
 		+ newline
 	);
 }
-
-main();
 
 </script>
 </body>

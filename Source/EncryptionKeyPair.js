@@ -8,6 +8,41 @@ class EncryptionKeyPair
 		this.privateExponent = privateExponent;
 	}
 
+	static fromJson(keyPublicAsJson, keyPrivateAsJson)
+	{
+		var keyPublicAsObject = JSON.parse(keyPublicAsJson);
+		var keyPrivateAsObject = JSON.parse(keyPrivateAsJson);
+
+		// hack - These numbers may get bigger than an JavaScript number can hold.
+
+		var base10 = 10;
+
+		var modulusAsInt = parseInt(keyPublicAsObject.modulus);
+		var modulusAsLargeInteger =
+			new LargeInteger(base10).setFromInt(modulusAsInt);
+		
+		var publicExponent =
+			new LargeInteger(base10).setFromInt
+			(
+				parseInt(keyPublicAsObject.publicExponent)
+			);
+
+		var privateExponent =
+			new LargeInteger(base10).setFromInt
+			(
+				parseInt(keyPrivateAsObject.privateExponent)
+			);
+
+		var keyPair = new EncryptionKeyPair
+		(
+			modulusAsLargeInteger,
+			publicExponent,
+			privateExponent
+		);
+
+		return keyPair;
+	}
+
 	decrypt(messageToDecrypt)
 	{
 		return this.encryptOrDecrypt
@@ -105,6 +140,27 @@ class EncryptionKeyPair
 	}
 
 	// string
+
+	keyPublicAsJson()
+	{
+		var objectToSerialize =
+		{
+			"modulus" : this.modulus.toString(),
+			"publicExponent" : this.publicExponent.toString(),
+		}
+		var returnValue = JSON.stringify(objectToSerialize);
+		return returnValue;
+	}
+
+	keyPrivateAsJson()
+	{
+		var objectToSerialize =
+		{
+			"privateExponent" : this.privateExponent.toString()
+		}
+		var returnValue = JSON.stringify(objectToSerialize);
+		return returnValue;
+	}
 
 	toString()
 	{
