@@ -1,0 +1,58 @@
+<html>
+<body>
+
+<script type="text/javascript" src="EncryptionKeyPair.js"></script>
+<script type="text/javascript" src="LargeInteger.js"></script>
+<script type="text/javascript" src="MathHelperLargeInteger.js"></script>
+
+<script type="text/javascript">
+
+function main()
+{
+	var newline = "<br />";
+
+	// This implementation can't handle big numbers.
+	var digitsPerPrime = 2;
+
+	var keyPair = new EncryptionKeyPair().generate(digitsPerPrime);
+	document.write("Key pair is " + keyPair.toString() + newline);
+
+	// hack
+	// We're assuming the modulus is greater than the messageToEncrypt.
+	// I believe this may cause problems on the rare occasions
+	// when the modulus ends up being less than the message value.
+ 
+	var messageToEncryptAsInt = 42;
+	var base = keyPair.modulus.base;
+	var messageToEncrypt = new LargeInteger(base).setFromInt
+	(
+		messageToEncryptAsInt
+	);
+	document.write
+	(
+		"Message to encrypt is "
+		+ messageToEncrypt.toString()
+		+ newline
+	);
+ 
+	var messageEncrypted = keyPair.encrypt(messageToEncrypt);
+	document.write
+	(
+		"Message encrypted is "
+		+ messageEncrypted.toString()
+		+ newline
+	);
+ 
+	var messageDecrypted = keyPair.decrypt(messageEncrypted);
+	document.write(
+		"Message decrypted is "
+		+ messageDecrypted.toString()
+		+ newline
+	);
+}
+
+main();
+
+</script>
+</body>
+</html>
